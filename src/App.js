@@ -1,28 +1,22 @@
-import {
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  useDisclosure,
-  Button,
-  Input,
-  Flex,
-  Avatar,
-  Badge,
-  Text,
-  Box,
-  Center,
-} from "@chakra-ui/react";
+import { Flex, Avatar, Badge, Text, Box, Center } from "@chakra-ui/react";
 import "./App.css";
-import React from "react";
+import { useEffect, useState } from "react";
 import AddMachine from "./components/AddMachine";
+import MachineCard from "./components/MachineCard";
+const server = process.env.REACT_APP_HOST_DOMAIN;
 
 function App() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = React.useRef();
+  const [machines, setMachines] = useState([]);
+
+  useEffect(() => {
+    fetch(`${server}/api/`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setMachines(data);
+      });
+  }, []);
+
   return (
     <>
       <Center bg="tomato" h="100px" color="white">
@@ -39,38 +33,10 @@ function App() {
           </Box>
         </Flex>
       </Center>
-
       <AddMachine />
-
-      {/* <Center h="100px" color="white">
-        <Button ref={btnRef} colorScheme="teal" onClick={onOpen}>
-          Open
-        </Button>
-      </Center>
-
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Create your account</DrawerHeader>
-
-          <DrawerBody>
-            <Input placeholder="Type here..." />
-          </DrawerBody>
-
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue">Save</Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer> */}
+      {machines.map((machine) => {
+        return <MachineCard machine={machine} />;
+      })}
     </>
   );
 }
